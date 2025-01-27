@@ -2,7 +2,13 @@ class User < ApplicationRecord
     after_create :update_user_in_cache
     after_destroy :remove_user_from_cache
     has_secure_password
-    validates :email, presence: true, uniqueness: true
+    validates :email, 
+        presence: { message: "Email is invalid" }, 
+        uniqueness: { message: "has already been taken"}, 
+        format: { 
+            with: /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\z/, 
+            message: "is invalid" 
+        }
 
     def self.get_cached_users
         Rails.cache.fetch("users", expires_in: 12.hours) do
